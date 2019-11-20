@@ -6,8 +6,10 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.core.net.toFile
+import kotlinx.android.synthetic.main.activity_main.*
+import java.security.Permission
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,22 +19,22 @@ class MainActivity : AppCompatActivity() {
 
         permissionRequest()
 
+        var path = getSong(contentResolver).get(0).path
+        stringToJNI(path!!)
+
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + "/" + getSong(
             contentResolver
         ).get(0).id
 
-        Log.d("MediaStoreToNativeAudio", "uri[" + uri + "]")
-
         val URI = Uri.parse( uri )
-        val pfd = contentResolver.openFileDescriptor(URI, "r")
-        parcelFileDescToJNI(pfd?.fd!!, 0, pfd.statSize)
+        stringToJNI(URI!!.toString())
     }
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    external fun parcelFileDescToJNI(fd : Int, offset : Long, length : Long)
+    external fun stringToJNI(URI: String)
 
     companion object {
 

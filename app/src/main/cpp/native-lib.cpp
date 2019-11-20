@@ -8,28 +8,24 @@
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, APP_NAME, __VA_ARGS__))
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_example_mediastoretonativeaudio_MainActivity_parcelFileDescToJNI(
+Java_com_example_mediastoretonativeaudio_MainActivity_stringToJNI(
         JNIEnv *env,
         jobject jobj,
-        jint fd,
-        jlong offset,
-        jlong length) {
+        jstring URI) {
 
-    int fd_ = fd;
-    int64_t offset_ = offset;
-    int64_t length_ = length;
+    const char *uri = env->GetStringUTFChars(URI, NULL);
+    std::string s(uri);
+
     AMediaExtractor *extractor = AMediaExtractor_new();
-    media_status_t amresult = AMediaExtractor_setDataSourceFd(extractor, fd_, offset_, length_);
+    media_status_t amresult = AMediaExtractor_setDataSource(extractor, uri);
     if (amresult != AMEDIA_OK) {
-        LOGE("AMediaExtractor_setDataSource called with: [%d-%ld-%ld]", fd_, offset_, length_);
+        LOGE("AMediaExtractor_setDataSource called with: [%s]", s.c_str());
         LOGE("Error setting extractor data source, err %d", amresult);
     }
     else {
-        LOGE("AMediaExtractor_setDataSource called with: [%d-%ld-%ld]",fd_, offset_, length_);
+        LOGE("AMediaExtractor_setDataSource called with: [%s]", s.c_str());
         LOGE("SUCCESS !!! %d", amresult);
     }
 
     return;
 }
-
-
