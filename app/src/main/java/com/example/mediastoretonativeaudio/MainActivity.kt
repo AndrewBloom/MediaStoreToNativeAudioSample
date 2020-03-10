@@ -25,7 +25,9 @@ class MainActivity : AppCompatActivity() {
 
         val URI = Uri.parse( uri )
         val pfd = contentResolver.openFileDescriptor(URI, "r")
-        parcelFileDescToJNI(pfd?.fd!!, 0, pfd.statSize)
+        pfd?.let {
+            parcelFileDescToJNI(it.detachFd(), 0, it.statSize)
+        }
     }
 
     /**
